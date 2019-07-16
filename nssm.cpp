@@ -266,9 +266,16 @@ int _tmain(int argc, TCHAR **argv) {
       _tprintf(_T("%s %s %s %s\n"), NSSM, NSSM_VERSION, NSSM_CONFIGURATION, NSSM_DATE);
       nssm_exit(0);
     }
-    if (str_equiv(argv[1], _T("start"))) nssm_exit(control_service(NSSM_SERVICE_CONTROL_START, argc - 2, argv + 2));
-    if (str_equiv(argv[1], _T("stop"))) nssm_exit(control_service(SERVICE_CONTROL_STOP, argc - 2, argv + 2));
+    if (str_equiv(argv[1], _T("start"))) {
+      if (!is_admin) nssm_exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_REMOVE));
+      nssm_exit(control_service(NSSM_SERVICE_CONTROL_START, argc - 2, argv + 2));
+    }
+    if (str_equiv(argv[1], _T("stop"))) {
+      if (!is_admin) nssm_exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_REMOVE));
+      nssm_exit(control_service(SERVICE_CONTROL_STOP, argc - 2, argv + 2));
+    }
     if (str_equiv(argv[1], _T("restart"))) {
+	  if (!is_admin) nssm_exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_REMOVE));
       int ret = control_service(SERVICE_CONTROL_STOP, argc - 2, argv + 2);
       if (ret) nssm_exit(ret);
       nssm_exit(control_service(NSSM_SERVICE_CONTROL_START, argc - 2, argv + 2));

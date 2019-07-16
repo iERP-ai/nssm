@@ -27,9 +27,7 @@ static inline int service_control_response(unsigned long control, unsigned long 
   switch (control) {
     case NSSM_SERVICE_CONTROL_START:
       switch (status) {
-        case SERVICE_START_PENDING:
-          return 1;
-
+		case SERVICE_START_PENDING:
         case SERVICE_RUNNING:
           return 0;
 
@@ -353,7 +351,7 @@ SC_HANDLE open_service(SC_HANDLE services, TCHAR *service_name, unsigned long ac
 
   /* We can't look for a display name because there's no buffer to store it. */
   if (! canonical_name) {
-    print_message(stderr, NSSM_MESSAGE_OPENSERVICE_FAILED, error_string(GetLastError()));
+	print_message(stderr, NSSM_MESSAGE_OPENSERVICE_FAILED, error_string(GetLastError()));
     return 0;
   }
 
@@ -1457,7 +1455,7 @@ int control_service(unsigned long control, int argc, TCHAR **argv, bool return_s
 
     if (ret) {
       _tprintf(_T("%s\n"), service_status_text(service_status.dwCurrentState));
-      if (return_status) return service_status.dwCurrentState;
+	  if (return_status) return service_status.dwCurrentState;
       return 0;
     }
     else {
@@ -1898,7 +1896,8 @@ int start_service(nssm_service_t *service) {
     if (si.dwFlags & STARTF_USESTDHANDLES) inherit_handles = true;
     unsigned long flags = service->priority & priority_mask();
     if (service->affinity) flags |= CREATE_SUSPENDED;
-    if (! service->no_console) flags |= CREATE_NEW_CONSOLE;
+    if (! service->no_console) flags |= CREATE_NEW_CONSOLE;
+
     if (! CreateProcess(0, cmd, 0, 0, inherit_handles, flags, 0, service->dir, &si, &pi)) {
       unsigned long exitcode = 3;
       unsigned long error = GetLastError();
